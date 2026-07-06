@@ -1,37 +1,61 @@
 let expenses = [];
 
-const expenseBtn = 
-    document.getElementById("expenseBtn-input");
-
+const expenseBtn = document.getElementById("expenseBtn-input");
 expenseBtn.addEventListener("click", addExpense);
 
-function addExpense(){
-    
-    const expenseName =
-        document.getElementById("expenseName-input").value;
-    
-    const expenseAmount =
-        document.getElementById("amount-input").value;
-        
-    const expenseCategory =
-        document.getElementById("category-input").value;    
+function addExpense() {
+    const expenseName = document.getElementById("expenseName-input").value;
+    const expenseAmount = parseFloat(document.getElementById("amount-input").value);
+    const expenseCategory = document.getElementById("category-input").value;
 
-    const expenseDate =
-        document.getElementById("date-input").value;    
+    let expenseDate = document.getElementById("date-input").value;
 
-    let expense =
-        {
-            name: expenseName,
-            amount: expenseAmount,
-            category: expenseCategory,
-            date: expenseDate
-        }
-    ;
-        
-        expenses.push(expense);
-        console.log(expenses);
-   
-};
+    if (expenseDate) {
+        const [year, month, day] = expenseDate.split("-");
+        expenseDate = `${month}/${day}/${year}`;
+    }
 
-//1.  it retrieves the string or integer and then passes it to the variable for storage for data manipulaton
-//2. parsefloat() is for decimals because it was an amount and all know that when we store money it is not just a whole number, so we need to consider the value to converted to float
+    const expense = {
+        name: expenseName,
+        amount: expenseAmount,
+        category: expenseCategory,
+        date: expenseDate
+    };
+
+    console.log(expense);
+
+    expenses.push(expense);
+    displayExpenses();
+    clearInputs();
+}
+
+function displayExpenses() {
+    const expenseList = document.getElementById("expenseList");
+    expenseList.innerHTML = "";
+
+    expenses.forEach((expense, index) => {
+        expenseList.innerHTML += `
+            <tr class="border-b border-slate-600 align-middle">
+                <td class="p-3 text-center break-words">${expense.name}</td>
+                <td class="p-3 text-center break-words">₱${expense.amount}</td>
+                <td class="p-3 text-center break-words">${expense.category}</td>
+                <td class="p-3 text-center break-words">${expense.date}</td>
+                <td class="p-3 text-center break-words">
+                    <button onclick="editExpense(${index})" class="bg-blue-500 px-3 py-1 rounded mr-2">
+                        Edit
+                    </button>
+                    <button onclick="deleteExpense(${index})" class="bg-red-500 px-3 py-1 rounded">
+                        Delete
+                    </button>
+                </td>
+            </tr>
+        `;
+    });
+}
+
+function clearInputs() {
+    document.getElementById("expenseName-input").value = "";
+    document.getElementById("amount-input").value = "";
+    document.getElementById("category-input").selectedIndex = 0;
+    document.getElementById("date-input").value = "";
+}
