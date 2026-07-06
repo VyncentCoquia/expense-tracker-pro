@@ -53,6 +53,22 @@ function displayExpenses() {
     });
 }
 
+function deleteExpense(index) {
+    expenses.splice(index, 1);
+    displayExpenses();
+}
+
+function editExpense(index) {
+    const expense = expenses[index];
+
+    document.getElementById("expenseName-input").value = expense.name;
+    document.getElementById("amount-input").value = expense.amount;
+    document.getElementById("category-input").value = expense.category;
+
+    expenses.splice(index, 1);
+    displayExpenses();
+}
+
 function clearInputs() {
     document.getElementById("expenseName-input").value = "";
     document.getElementById("amount-input").value = "";
