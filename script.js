@@ -1,9 +1,11 @@
-let expenses = [];
+let expenses =
+    JSON.parse(
+        localStorage.getItem("myExpenses")
+    ) || [];
+let editingIndex = -1;
 
 const expenseBtn = document.getElementById("expenseBtn-input");
 expenseBtn.addEventListener("click", addExpense);
-
-
 
 function addExpense() {
     const expenseName = document.getElementById("expenseName-input").value;
@@ -12,7 +14,6 @@ function addExpense() {
 
     let expenseDate = document.getElementById("date-input").value;
 
-      
 
         if (expenseDate) {
             const [year, month, day] = expenseDate.split("-");
@@ -36,12 +37,18 @@ function addExpense() {
         date: expenseDate
     };
 
-    console.log(expense);
+         if (editingIndex === -1) {
+            // Mode: Add New
+            expenses.push(expense);
+        } else {
+            // Mode: Save Changes to existing item
+        expenses[editingIndex] = expense;
+        editingIndex = -1; // Reset tracking state back to normal
+        document.getElementById("expenseBtn-input").innerText = "Add Expense";
+        }
 
-    expenses.push(expense);
     displayExpenses();
     clearInputs();
-    updateTotal();
 }
 
 function displayExpenses() {
@@ -69,12 +76,16 @@ function displayExpenses() {
 }
 
 function deleteExpense(index) {
-    expenses.splice(index, 1);
-    refreshUI();
+    if(confirm("Delete this expense?")){
+        expenses.splice(index,1);
+        refreshUI();
+        clearInputs();
+    }
 }
 
 function editExpense(index) {
     const expense = expenses[index];
+    editingIndex = index;
 
     document.getElementById("expenseName-input").value = expense.name;
     document.getElementById("amount-input").value = expense.amount;
@@ -84,8 +95,7 @@ function editExpense(index) {
             const [month, day, year] = expense.date.split("/");
             document.getElementById("date-input").value = `${year}-${month}-${day}`;
         }
-
-    expenses.splice(index, 1);
+    document.getElementById("expenseBtn-input").innerText = "Save Changes";
     refreshUI();
 }
 
@@ -94,6 +104,8 @@ function clearInputs() {
     document.getElementById("amount-input").value = "";
     document.getElementById("category-input").selectedIndex = 0;
     document.getElementById("date-input").value = "";
+    document.getElementById("expenseBtn-input").innerText = "Add Expense";
+    editingIndex = -1;
 }
 
 function updateTotal(){
@@ -108,7 +120,15 @@ function updateTotal(){
         `₱ ${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
+function saveExpenses() {
+    localStorage.setItem(   
+        "myExpenses",
+        JSON.stringify(expenses)
+    );
+}
+
 function refreshUI(){
     displayExpenses();
     updateTotal();
+    saveExpenses(); //save the data to the storage
 }
