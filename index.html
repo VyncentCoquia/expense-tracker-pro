@@ -27,32 +27,42 @@
                 type="text"
                 id="expenseName-input"
                 placeholder="Expense Name"
-                class="w-full p-3 rounded-xl bg-white/20 text-white placeholder-white/70 border border-white/20 focus:outline-none focus:ring-2 focus:ring-green-400">
+                class="w-full p-3 rounded-xl bg-white/20 text-white placeholder-white/70 
+                border border-white/20 focus:outline-none focus:ring-2 focus:ring-green-400
+                hover:bg-slate-200/30 transition select-none hover:scale-[1.03]">
 
             <input
                 type="number"
                 id="amount-input"
                 placeholder="Amount"
-                class="w-full p-3 rounded-xl bg-white/20 text-white placeholder-white/70 border border-white/20 focus:outline-none focus:ring-2 focus:ring-green-400">
+                class="w-full p-3 rounded-xl bg-white/20 text-white placeholder-white/70 border
+                border-white/20 focus:outline-none focus:ring-2 focus:ring-green-400
+                hover:bg-slate-200/30 transition select-none hover:scale-[1.03]">
 
             <select
                 id="category-input"
-                class="w-full p-3 rounded-xl bg-white/20 text-black border border-white/20 focus:outline-none focus:ring-2 focus:ring-green-400">
-                <option class = "text-white" hidden selected>Category</option>
-                <option value="Food">Food</option>
-                <option value="Transportation">Transportation</option>
-                <option value="Bills">Bills</option>
-                <option value="Shopping">Shopping</option>
+                class="w-full p-3 rounded-xl bg-white/20 border-white/20 text-white focus:outline-none 
+                focus:ring-2 focus:ring-green-400
+                hover:bg-slate-200/30 transition select-none hover:scale-[1.03]">
+                <option class = "bg-slate-800 text-white" hidden selected>Category</option>
+                <option class = "bg-slate-800 text-white" value="Food">Food</option>
+                <option class = "bg-slate-800 text-white" value="Transportation">Transportation</option>
+                <option class = "bg-slate-800 text-white"value="Bills">Bills</option>
+                <option class = "bg-slate-800 text-white" value="Shopping">Shopping</option>
             </select>
 
             <input
                 type="date"
                 id="date-input"
-                class="w-full p-3 rounded-xl bg-white/20 text-white placeholder-white/70 border border-white/20 focus:outline-none focus:ring-2 focus:ring-green-400">
+                class="w-full p-3 rounded-xl bg-white/20 text-white placeholder-white/70 border 
+                border-white/20 focus:outline-none focus:ring-2 focus:ring-green-400
+                hover:bg-slate-200/30 transition select-none hover:scale-[1.03]">
 
             <button
                 id="expenseBtn-input"
-                class="w-full bg-green-600 text-white font-bold p-3 rounded-xl hover:bg-green-700 transition">
+                class="w-full bg-green-600 text-white font-bold p-3 rounded-xl transition 
+                duration-300 ease-out select-none transform hover:bg-green-500 hover:scale-[1.02] 
+                hover:shadow-[0_0_20px_rgba(34,197,94,0.4)] active:scale-[0.98]">
                 Add Expense
             </button>
         </div>
@@ -66,11 +76,17 @@
                 <table class="w-full min-w-[700px] text-white text-sm text-center table-fixed border-collapse">
                     <thead>
                         <tr class="bg-slate-700">
-                            <th class="p-3 w-1/5">Expense Name</th>
-                            <th class="p-3 w-1/5">Amount</th>
-                            <th class="p-3 w-1/5">Category</th>
-                            <th class="p-3 w-1/5">Date</th>
-                            <th class="p-3 w-1/5">Action</th>
+                            <th class="p-3 w-1/5 hover:bg-slate-200/20 transition select-none">Expense Name</th>
+                            <th class="p-3 w-1/5 hover:bg-slate-200/20 transition select-none">Amount</th>
+                            <th class="p-3 w-1/5 hover:bg-slate-200/20 transition select-none">Category</th>
+                            <th onclick="toggleDateSort()" class="p-3 w-1/5 cursor-pointer hover:bg-slate-200/20 hover:text-white 
+                            transition select-none">
+                                <div class="flex items-center justify-center gap-1">
+                                    <span>Date</span>
+                                    <span id="date-sort-arrow" class="text-xs text-green-400">▼</span>
+                                </div>
+                            </th>
+                            <th class="p-3 w-1/5 hover:bg-slate-200/20 transition select-none">Action</th>
                         </tr>
                     </thead>
                     <tbody id="expenseList"></tbody>
