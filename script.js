@@ -3,6 +3,8 @@ let expenses = [];
 const expenseBtn = document.getElementById("expenseBtn-input");
 expenseBtn.addEventListener("click", addExpense);
 
+
+
 function addExpense() {
     const expenseName = document.getElementById("expenseName-input").value;
     const expenseAmount = parseFloat(document.getElementById("amount-input").value);
@@ -10,10 +12,22 @@ function addExpense() {
 
     let expenseDate = document.getElementById("date-input").value;
 
-    if (expenseDate) {
-        const [year, month, day] = expenseDate.split("-");
-        expenseDate = `${month}/${day}/${year}`;
-    }
+      
+
+        if (expenseDate) {
+            const [year, month, day] = expenseDate.split("-");
+            expenseDate = `${month}/${day}/${year}`;
+        }
+    
+        if (
+            !expenseName ||
+            !expenseAmount ||
+            !expenseCategory ||
+            !expenseDate
+                ) {
+            alert("Please complete all fields.");
+            return;
+        }
 
     const expense = {
         name: expenseName,
@@ -27,6 +41,7 @@ function addExpense() {
     expenses.push(expense);
     displayExpenses();
     clearInputs();
+    updateTotal();
 }
 
 function displayExpenses() {
@@ -36,8 +51,8 @@ function displayExpenses() {
     expenses.forEach((expense, index) => {
         expenseList.innerHTML += `
             <tr class="border-b border-slate-600 align-middle">
-                <td class="p-3 text-center break-words">${expense.name}</td>
-                <td class="p-3 text-center break-words">₱${expense.amount}</td>
+                <td class="p-3 text-center bxreak-words">${expense.name}</td>
+                <td class="p-3 text-center break-words">₱${expense.amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td class="p-3 text-center break-words">${expense.category}</td>
                 <td class="p-3 text-center break-words">${expense.date}</td>
                 <td class="p-3 text-center break-words">
@@ -55,7 +70,7 @@ function displayExpenses() {
 
 function deleteExpense(index) {
     expenses.splice(index, 1);
-    displayExpenses();
+    refreshUI();
 }
 
 function editExpense(index) {
@@ -65,8 +80,13 @@ function editExpense(index) {
     document.getElementById("amount-input").value = expense.amount;
     document.getElementById("category-input").value = expense.category;
 
+        if (expense.date) {
+            const [month, day, year] = expense.date.split("/");
+            document.getElementById("date-input").value = `${year}-${month}-${day}`;
+        }
+
     expenses.splice(index, 1);
-    displayExpenses();
+    refreshUI();
 }
 
 function clearInputs() {
@@ -74,4 +94,21 @@ function clearInputs() {
     document.getElementById("amount-input").value = "";
     document.getElementById("category-input").selectedIndex = 0;
     document.getElementById("date-input").value = "";
+}
+
+function updateTotal(){
+    let total = 0;
+    
+        for(let i = 0; i<expenses.length; i++){
+            total += expenses[i].amount;
+
+        }
+
+    document.getElementById("totalExpense").innerHTML = 
+        `₱ ${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+}
+
+function refreshUI(){
+    displayExpenses();
+    updateTotal();
 }
