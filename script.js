@@ -47,7 +47,7 @@ function addExpense() {
         document.getElementById("expenseBtn-input").innerText = "Add Expense";
         }
 
-    displayExpenses();
+    refreshUI();
     clearInputs();
 }
 
@@ -108,16 +108,52 @@ function clearInputs() {
     editingIndex = -1;
 }
 
-function updateTotal(){
-    let total = 0;
-    
-        for(let i = 0; i<expenses.length; i++){
-            total += expenses[i].amount;
 
+function updateDashboard(){
+    
+    if(expenses && expenses.length > 0 ){
+        let total = 0;
+        let highestExpenseValue = expenses[0].amount;
+        
+
+            for(let i = 0; i<expenses.length; i++){
+                total += expenses[i].amount;
+               
+                    //highest expense calculation
+                    if(expenses[i].amount>highestExpenseValue){
+                        highestExpenseValue = expenses[i].amount;
+                        
+                    }
+                    
+            }
+        //Total Expense
+        document.getElementById("totalExpense").innerHTML = 
+            `₱ ${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        //Transaction Count
+        document.getElementById("transactionCount").innerHTML = expenses.length;    
+
+        //Highest Expense
+        document.getElementById("highestExpense").innerHTML = 
+        `₱ ${highestExpenseValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+        //Average Expense
+        let averageExpenseValue = total/expenses.length;
+        document.getElementById("averageExpense").innerHTML = 
+        `₱ ${averageExpenseValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+
+    }
+
+    else{ 
+        
+        document.getElementById("totalExpense").innerHTML = "₱ 0.00";
+        document.getElementById("transactionCount").innerHTML = "0";
+        document.getElementById("highestExpense").innerHTML = "₱ 0.00";
+        document.getElementById("averageExpense").innerHTML = "₱ 0.00";
         }
 
-    document.getElementById("totalExpense").innerHTML = 
-        `₱ ${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    
+    
 }
 
 function saveExpenses() {
@@ -129,6 +165,6 @@ function saveExpenses() {
 
 function refreshUI(){
     displayExpenses();
-    updateTotal();
+    updateDashboard();
     saveExpenses(); //save the data to the storage
 }
