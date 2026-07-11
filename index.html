@@ -12,56 +12,71 @@
         <h1 class="text-4xl font-bold text-center text-white mb-8">
             Expense Tracker Pro
         </h1>
-        <div class="bg-slate-800 rounded-xl p-6 shadow-md mb-5">
-        <table class = "w-full">
-            <thead><tr>
-                <th><h2 class="text-gray-300 text-lg">
-                    Total Expenses
-                        <h1 id="totalExpense"
-                            class="text-4xl font-bold text-green-400 mt-2">
-                                 ₱ 0.00
-                        </h1>
-                </h2></th>
-
-                <th><h2 class="text-gray-300 text-lg">
-                    Transactions
-                        <h1 id="transactionCount"
-                            class="text-4xl font-bold text-green-400 mt-2">
-                                0
-                        </h1>
-                </h2></th>
-
-                <th><h2 class="text-gray-300 text-lg">
-                    Highest Expense
-                        <h1 id="highestExpense"
-                            class="text-4xl font-bold text-green-400 mt-2">
-                                ₱ 0.00
-                        </h1>
-                </h2></th>
-
-                <th><h2 class="text-gray-300 text-lg">
-                    Average Expense
-                        <h1 id="averageExpense"
-                            class="text-4xl font-bold text-green-400 mt-2">
-                                ₱ 0.00
-                        </h1>
-                </h2></th>
-               
-                </h2>
-            </thead></tr>
-        </table>
-            
+        
+        <div class="bg-slate-800 rounded-xl grid grid-cols-1 sm:grid-cols-2 gap-6 p-8 shadow-md mb-5 text-center sm:text-left">
+    
+        <!-- Card 1: Total Expenses -->
+        <div class="border-b border-slate-700 sm:border-b-0 pb-4 sm:pb-0">
+            <h2 class="text-gray-300 text-lg font-medium">Total Expenses</h2>
+            <h1 id="totalExpense" class="text-4xl font-bold text-green-400 mt-2">
+                ₱ 0.00
+            </h1>
         </div>
 
-        <div class="bg-slate-800 rounded-xl p-6 shadow-md mb-6">
+        <!-- Card 2: Transactions -->
+        <div class="border-b border-slate-700 sm:border-b-0 pb-4 sm:pb-0">
+            <h2 class="text-gray-300 text-lg font-medium">Transactions</h2>
+            <h1 id="transactionCount" class="text-4xl font-bold text-green-400 mt-2">
+                0
+            </h1>
+        </div>
 
-            <h2 class="text-xl text-green-400 font-semibold mb-4 text-center">
-                Expenses by Category
-            </h2>
+        <!-- Card 3: Highest Expense -->
+        <div class="border-b border-slate-700 sm:border-b-0 pb-4 sm:pb-0">
+            <h2 class="text-gray-300 text-lg font-medium">Highest Expense</h2>
+            <h1 id="highestExpense" class="text-4xl font-bold text-green-400 mt-2">
+                ₱ 0.00
+            </h1>
+        </div>
+
+        <!-- Card 4: Average Expense -->
+        <div>
+            <h2 class="text-gray-300 text-lg font-medium">Average Expense</h2>
+            <h1 id="averageExpense" class="text-4xl font-bold text-green-400 mt-2">
+                ₱ 0.00
+            </h1>
+        </div>
+
+    </div>
+
+    <div class="bg-slate-800 rounded-xl p-6 shadow-md mb-6">
+        <h2 class="text-xl text-green-400 font-semibold mb-4 text-center">
+            Expenses by Category
+        </h2>
+<div id="chartWrapper" class="w-full h-[350px]">
+        <div id="chartEmptyState"
+            class="flex flex-col items-center justify-center h-[300px] text-slate-400 animate-pulse">
+            <div class="bg-slate-700/40 p-4 rounded-full mb-3">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="w-12 h-12 text-slate-500">
+                    <path stroke-linecap="round"
+                        stroke-linejoin="round"
+                        d="M3 3v18h18M7.5 14.25l3-3 2.25 2.25 4.5-6" />
+                </svg>
+            </div>
+
+            <p class="text-lg font-medium">No expense data yet</p>
+            <p class="text-sm text-slate-500">Add your first expense to see the chart.</p>
+        </div>
 
             <canvas id="expenseChart"></canvas>
-
         </div>
+</div>
+        
 
         <div class="space-y-4">
             <input
@@ -112,7 +127,12 @@
             <h2 class="text-2xl text-white font-bold mb-5 text-center">
                 Transactions
             </h2>
-
+            <input
+                id="search-input"
+                type="text"
+                placeholder="Search Expense..."
+                class="w-full p-3 rounded-lg bg-slate-700 text-white placeholder-gray-400 mb-4"
+            />
             <div class="overflow-x-auto">
                 <table class="w-full min-w-[700px] text-white text-sm text-center table-fixed border-collapse">
                     <thead>
