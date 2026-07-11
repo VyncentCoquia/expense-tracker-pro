@@ -3,6 +3,7 @@ let expenses =
         localStorage.getItem("myExpenses")
     ) || [];
 let editingIndex = -1;
+let expenseChart = null;
 
 const expenseBtn = document.getElementById("expenseBtn-input");
 expenseBtn.addEventListener("click", addExpense);
@@ -127,20 +128,21 @@ function updateDashboard(){
                     
             }
         //Total Expense
-        document.getElementById("totalExpense").innerHTML = 
-            `₱ ${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        const totalElement = document.getElementById("totalExpense");   
+            totalElement.innerHTML = `₱ ${total.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
         //Transaction Count
-        document.getElementById("transactionCount").innerHTML = expenses.length;    
+        const transactionElement = document.getElementById("transactionCount");  
+            transactionElement.innerHTML = ("transactionCount").innerHTML = expenses.length;    
 
         //Highest Expense
-        document.getElementById("highestExpense").innerHTML = 
-        `₱ ${highestExpenseValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+         const highestExpenseElement = document.getElementById("highestExpense");
+            highestExpenseElement.innerHTML = `₱ ${highestExpenseValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
         //Average Expense
         let averageExpenseValue = total/expenses.length;
-        document.getElementById("averageExpense").innerHTML = 
-        `₱ ${averageExpenseValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        const averageExpenseElement = document.getElementById("averageExpense");
+        averageExpenseElement.innerHTML = `₱ ${averageExpenseValue.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 
     }
 
@@ -151,9 +153,145 @@ function updateDashboard(){
         document.getElementById("highestExpense").innerHTML = "₱ 0.00";
         document.getElementById("averageExpense").innerHTML = "₱ 0.00";
         }
+}
 
-    
-    
+function updateChart() {
+    const totals = getCategoryTotal();
+    const labels = Object.keys(totals);
+    const data = Object.values(totals);
+
+    const canvas = document.getElementById("expenseChart");
+    const chartWrapper = document.getElementById("chartWrapper");
+    const chartEmptyState = document.getElementById("chartEmptyState");
+
+    if (!canvas || !chartWrapper || !chartEmptyState) {
+        console.error("Chart elements not found.");
+        return;
+    }
+
+    const currencyFormatter = new Intl.NumberFormat("en-PH", {
+        style: "currency",
+        currency: "PHP",
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2
+    });
+
+    const hasData = data.some(value => value > 0);
+
+    if (expenseChart) {
+        expenseChart.destroy();
+        expenseChart = null;
+    }
+
+    if (labels.length === 0 || data.length === 0 || !hasData) {
+        chartWrapper.classList.add("hidden");
+        chartEmptyState.classList.remove("hidden");
+        chartEmptyState.classList.add("flex");
+        return;
+    }
+
+    chartEmptyState.classList.add("hidden");
+    chartEmptyState.classList.remove("flex");
+    chartWrapper.classList.remove("hidden");
+
+    expenseChart = new Chart(canvas, {
+        type: "bar",
+        data: {
+            labels: labels,
+            datasets: [{
+                label: "Category",
+                data: data,
+                backgroundColor: [
+                    "#39ff14",
+                    "#00e5ff",
+                    "#ff4d6d",
+                    "#ffd60a",
+                    "#9b5de5",
+                    "#00f5d4",
+                    "#ff9f1c",
+                    "#2ec4b6"
+                ],
+                hoverBackgroundColor: [
+                    "#66ff66",
+                    "#33ebff",
+                    "#ff758f",
+                    "#ffe14d",
+                    "#b388ff",
+                    "#33ffe0",
+                    "#ffb84d",
+                    "#4ddbcc"
+                ],
+                borderRadius: 12,
+                borderSkipped: false
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: false
+                },
+                tooltip: {
+                    backgroundColor: "#0f172a",
+                    titleColor: "#39ff14",
+                    bodyColor: "#ffffff",
+                    borderColor: "#39ff14",
+                    borderWidth: 1,
+                    callbacks: {
+                        label: function(context) {
+                            return currencyFormatter.format(context.raw);
+                        }
+                    }
+                }
+            },
+            scales: {
+                x: {
+                    ticks: {
+                        color: "#ffffff"
+                    },
+                    grid: {
+                        display: false
+                    },
+                    border: {
+                        display: false
+                    }
+                },
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        color: "#ffffff",
+                        callback: function(value) {
+                            return currencyFormatter.format(value);
+                        }
+                    },
+                    grid: {
+                        color: "rgba(255,255,255,0.08)"
+                    },
+                    border: {
+                        display: false
+                    }
+                }
+            }
+        }
+    });
+}
+
+function getCategoryTotal(){
+    let categoryTotals = {};
+
+    for(let value of expenses){
+        let category = value.category;
+        let amount = value.amount;
+
+            if(categoryTotals[category]){
+                categoryTotals[category] += amount;
+            }
+            else{
+                categoryTotals[category] = amount;
+            }
+    }
+    return categoryTotals;
 }
 
 function saveExpenses() {
@@ -166,5 +304,8 @@ function saveExpenses() {
 function refreshUI(){
     displayExpenses();
     updateDashboard();
+    updateChart();
     saveExpenses(); //save the data to the storage
 }
+
+
