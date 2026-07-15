@@ -5,7 +5,13 @@ let expenses =
 let editingIndex = -1;
 let expenseChart = null;
 
-const expenseBtn = document.getElementById("expenseBtn-input");
+const searchInput =
+    document.getElementById("search-input");
+
+searchInput.addEventListener("input", searchExpenses);
+
+const expenseBtn = 
+    document.getElementById("expenseBtn-input");
 expenseBtn.addEventListener("click", addExpense);
 
 function addExpense() {
@@ -52,27 +58,30 @@ function addExpense() {
     clearInputs();
 }
 
-function displayExpenses() {
+function displayExpenses(expenseArray = expenses) {
     const expenseList = document.getElementById("expenseList");
     expenseList.innerHTML = "";
+    
 
-    expenses.forEach((expense, index) => {
+    expenseArray.forEach((expense) => {
+        const originalIndex = expenses.indexOf(expense);
         expenseList.innerHTML += `
             <tr class="border-b border-slate-600 align-middle">
-                <td class="p-3 text-center bxreak-words">${expense.name}</td>
+                <td class="p-3 text-center break-words">${expense.name}</td>
                 <td class="p-3 text-center break-words">₱${expense.amount.toLocaleString("en-US", { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</td>
                 <td class="p-3 text-center break-words">${expense.category}</td>
                 <td class="p-3 text-center break-words">${expense.date}</td>
                 <td class="p-3 text-center break-words">
-                    <button onclick="editExpense(${index})" class="bg-blue-500 px-3 py-1 rounded mr-2">
+                    <button onclick="editExpense(${originalIndex})" class="bg-blue-500 px-3 py-1 rounded mr-2">
                         Edit
                     </button>
-                    <button onclick="deleteExpense(${index})" class="bg-red-500 px-3 py-1 rounded">
+                    <button onclick="deleteExpense(${originalIndex})" class="bg-red-500 px-3 py-1 rounded">
                         Delete
                     </button>
                 </td>
             </tr>
         `;
+        
     });
 }
 
@@ -133,7 +142,7 @@ function updateDashboard(){
 
         //Transaction Count
         const transactionElement = document.getElementById("transactionCount");  
-            transactionElement.innerHTML = ("transactionCount").innerHTML = expenses.length;    
+            transactionElement.innerHTML = expenses.length;    
 
         //Highest Expense
          const highestExpenseElement = document.getElementById("highestExpense");
@@ -294,6 +303,25 @@ function getCategoryTotal(){
     return categoryTotals;
 }
 
+function searchExpenses(){ //food
+   const searchKey = searchInput.value
+   const filteredExpenses = filterExpenses(searchKey, expenses);
+   displayExpenses(filteredExpenses)
+}
+
+function filterExpenses(searchKey, expenseArray){
+    const keyWord = searchKey.toLowerCase().trim();
+        if(keyWord === ""){
+            return expenseArray;
+        }
+       
+    return expenseArray.filter(expense => 
+            expense.name.toLowerCase().trim().includes(keyWord) ||
+            expense.category.toLowerCase().trim().includes(keyWord) ||
+            expense.date.toLowerCase().trim().includes(keyWord));
+        
+}
+
 function saveExpenses() {
     localStorage.setItem(   
         "myExpenses",
@@ -302,7 +330,14 @@ function saveExpenses() {
 }
 
 function refreshUI(){
-    displayExpenses();
+
+        if(searchInput.value === ""){
+            displayExpenses();
+        }
+        else{
+            displayExpenses(filterExpenses(searchInput.value, expenses))
+        }
+    
     updateDashboard();
     updateChart();
     saveExpenses(); //save the data to the storage
