@@ -4,6 +4,19 @@ let expenses =
     ) || [];
 let editingIndex = -1;
 let expenseChart = null;
+let selectedCategory = "All";
+let sortState = {
+    column: "",
+    direction: "desc"
+};
+
+const sortFunctions = {
+        name:   (a,b)=>a.name.localeCompare(b.name),
+        amount: (a,b)=>a.amount - b.amount,
+        category: (a,b)=>a.category.localeCompare(b.category),
+        date: (a, b) => new Date(a.date) - new Date(b.date)
+    };
+
 
 const searchInput =
     document.getElementById("search-input");
@@ -14,10 +27,31 @@ const expenseBtn =
     document.getElementById("expenseBtn-input");
 expenseBtn.addEventListener("click", addExpense);
 
+document
+    .getElementById("sort-expenseName")
+    .addEventListener("click", () => sortExpenses("name"));
+
+document
+    .getElementById("sort-amount")
+    .addEventListener("click", () => sortExpenses("amount"));
+ 
+document
+    .getElementById("sort-category")
+    .addEventListener("click", () => sortExpenses("category"));    
+
+document
+    .getElementById("sort-date")
+    .addEventListener("click", () => sortExpenses("date"));    
+
+
+
+refreshUI(); 
+
 function addExpense() {
     const expenseName = document.getElementById("expenseName-input").value;
     const expenseAmount = parseFloat(document.getElementById("amount-input").value);
     const expenseCategory = document.getElementById("category-input").value;
+
 
     let expenseDate = document.getElementById("date-input").value;
 
@@ -119,19 +153,19 @@ function clearInputs() {
 }
 
 
-function updateDashboard(){
+function updateDashboard(expenseArray = expenses){
     
-    if(expenses && expenses.length > 0 ){
+    if(expenseArray && expenseArray.length > 0 ){
         let total = 0;
-        let highestExpenseValue = expenses[0].amount;
+        let highestExpenseValue = expenseArray[0].amount;
         
 
-            for(let i = 0; i<expenses.length; i++){
-                total += expenses[i].amount;
+            for(let i = 0; i<expenseArray.length; i++){
+                total += expenseArray[i].amount;
                
                     //highest expense calculation
-                    if(expenses[i].amount>highestExpenseValue){
-                        highestExpenseValue = expenses[i].amount;
+                    if(expenseArray[i].amount>highestExpenseValue){
+                        highestExpenseValue = expenseArray[i].amount;
                         
                     }
                     
@@ -164,8 +198,8 @@ function updateDashboard(){
         }
 }
 
-function updateChart() {
-    const totals = getCategoryTotal();
+function updateChart(expenseArray = expenses) {
+    const totals = getCategoryTotal(expenseArray);
     const labels = Object.keys(totals);
     const data = Object.values(totals);
 
@@ -306,7 +340,7 @@ function getCategoryTotal(){
 function searchExpenses(){ //food
    const searchKey = searchInput.value
    const filteredExpenses = filterExpenses(searchKey, expenses);
-   displayExpenses(filteredExpenses)
+   refreshUI();
 }
 
 function filterExpenses(searchKey, expenseArray){
@@ -322,6 +356,39 @@ function filterExpenses(searchKey, expenseArray){
         
 }
 
+function sortExpenses(type) { 
+
+   if(sortState.column === type){
+    sortState.direction = sortState.direction === "desc" ? "asc" : "desc";
+   }
+   else{
+    sortState.column = type;
+    sortState.direction = "desc";
+   }
+   refreshUI();
+}
+
+
+function applySorting(expenseArray){
+    const compare = sortFunctions[sortState.column];
+
+    // If no valid sort column is selected,
+    // return the original array.
+    if (!compare) {
+        return expenseArray;
+    }
+    expenseArray.sort((a, b) =>
+
+        sortState.direction === "desc"
+
+            ? compare(b, a)
+
+            : compare(a, b)
+
+    );
+return expenseArray;
+}
+
 function saveExpenses() {
     localStorage.setItem(   
         "myExpenses",
@@ -330,17 +397,14 @@ function saveExpenses() {
 }
 
 function refreshUI(){
+    let currentState = [...expenses]
+    currentState = filterExpenses(searchInput.value, currentState);
+    currentState = applySorting(currentState);
 
-        if(searchInput.value === ""){
-            displayExpenses();
-        }
-        else{
-            displayExpenses(filterExpenses(searchInput.value, expenses))
-        }
-    
-    updateDashboard();
-    updateChart();
-    saveExpenses(); //save the data to the storage
+        displayExpenses(currentState);
+        updateDashboard(currentState);
+        updateChart(currentState);
+        saveExpenses(); //save the data to the storage
 }
 
 
