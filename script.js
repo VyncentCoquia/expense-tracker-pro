@@ -14,6 +14,30 @@ const sortFunctions = {
   date: (a, b) => new Date(a.date) - new Date(b.date),
 };
 
+const categoryIcons = {
+        Food: "🍔",
+        Bills: "💡",
+        Shopping: "🛒",
+        Entertainment: "🎮",
+        Transportation: "🚌"
+    };
+    
+const categoryContainer =
+    document.getElementById("categoryFilters");
+
+categoryContainer.addEventListener("click", (event) => {
+
+    if (!event.target.dataset.category) {
+        return;
+    }
+
+    const category = event.target.dataset.category;
+    selectedCategory = category;
+    
+    refreshUI();
+
+});
+
 const searchInput = document.getElementById("search-input");
 
 searchInput.addEventListener("input", searchExpenses);
@@ -363,35 +387,30 @@ function renderCategoryFilters(){
 
   const container = document.getElementById("categoryFilters")
 
-  const categories = expenses.map(expense => expense.category);
+  const categories = expenses.map(({ category }) => category);
 
   const uniqueCategories = [...new Set(categories)];
 
   const categoryList = ["All", ...uniqueCategories];
-
-   const categoryIcons = {
-        Food: "🍔",
-        Bills: "💡",
-        Shopping: "🛒",
-        Entertainment: "🎮",
-        Transportation: "🚌"
-    };
     
   const buttons = categoryList.map(category => {
     const icon = categoryIcons[category] ||  "📁";
 
     const activeClass =
-            category === selectedCategory
-                ? "bg-green-500 text-white"
-                : "bg-slate-700 hover:bg-slate-600 text-white";
-    
+    category === selectedCategory
+        ? "bg-green-600 text-white shadow-md shadow-green-500/20 scale-[0.97] font-semibold"
+        : "bg-slate-700 active:bg-slate-600/80 text-slate-200 active:scale-[0.97]";
+
     return `
-            <button
-                data-category="${category}"
-                class="px-4 py-2 rounded-full transition flex-shrink-0 ${activeClass}">
-                ${icon} ${category}
-            </button>
-        `;
+        <button
+            data-category="${category}"
+            class="px-5 py-3 rounded-full transition-all duration-150 ease-out flex-shrink-0 transform select-none touch-manipulation min-h-[44px] focus:outline-none ${activeClass}">
+            <span class="inline-flex items-center gap-2.5 pointer-events-none">
+                <span class="text-lg leading-none">${icon}</span> 
+                <span class="text-sm font-medium tracking-wide capitalize">${category}</span>
+            </span>
+        </button>
+    `;
 });
     container.innerHTML = buttons.join("");
 
@@ -405,7 +424,7 @@ function refreshUI() {
   let currentState = [...expenses];
   currentState = filterExpenses(searchInput.value, currentState);
   currentState = applySorting(currentState);
-  renderCategoryFilters(currentState);
+  renderCategoryFilters();
   displayExpenses(currentState);
   updateDashboard(currentState);
   updateChart(currentState);
